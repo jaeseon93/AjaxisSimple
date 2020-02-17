@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title>Insert title here</title>
+</head>
+
+<body onload="getBoardList()">
+	<p id="list"></p>
+	<script>
+		var blist = document.getElementById("list");
+		function getBoardList() {
+			//ajax
+			var xhtp = new XMLHttpRequest();
+			xhtp.onreadystatechange = function(){
+				if(xhtp.readyState == 4 && xhtp.status == 200) {
+					createBoardTab(xhtp);
+				}
+			}
+			xhtp.open('get', '../BoardListServlet', true);
+			xhtp.send();
+		}
+		function createBoardTab(obj) {
+			var titles = ["BoardNo", "Title", "Content", "Writer", "Date"];
+			
+			var result = JSON.parse(obj.responseText);
+			console.log(result);
+			
+		var $text, $td, $tr, $table;
+		$table = document.createElement("table");
+		$table.setAttribute("border", 1);
+		
+		$tr = document.createElement("tr");
+		for (idx of titles) {
+			$text = document.createTextNode(idx);
+	    	$th = document.createElement("th");
+	    	$th.appendChild($text);
+	    	$tr.appendChild($th);
+	    	$table.appendChild($tr);
+		}
+		
+		
+		
+		for (i in result){
+			$tr = document.createElement("tr");
+			$tr.onmouseover = function() {
+				this.style.backgroundColor = "yellow";
+			}
+			$tr.onmouseout = function() {
+				this.style.backgroundColor = "white";
+			}
+	      for(field in result[i]){
+	    	$text = document.createTextNode(result[i][field]);
+	    	$td = document.createElement("td");
+	    	$td.setAttribute("align","center");
+	    	if(field == "boardNo"){
+	    		$a = document.createElement("a");
+	    		$a.setAttribute("href","board.jsp?boardNo="+result[i][field]);
+	    		$a.appendChild($text)
+	    		$td.appendChild($a);
+	    	} else {
+	    		$td.appendChild($text);
+	    	}
+				$tr.appendChild($td);	    	
+	      }
+	    	$table.appendChild($tr);
+		}
+		document.getElementById("list").appendChild($table);
+		
+		}
+	</script>
+
+</body>
+
+</html>

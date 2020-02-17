@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>loadDoc.html</title>
+</head>
+<body>
+	<div id="show"></div>
+	<button type="button" onclick="loadDoc()">Click</button>
+	<script>
+		function loadDoc() {
+			var xhtp = new XMLHttpRequest();
+			xhtp.onreadystatechange = function() { //상태가 바뀔때마다 function의 기능을 실행해라.
+				console.log(xhtp.readyState + ", " + xhtp.status);
+				if (xhtp.readyState == 4 && xhtp.status == 200) {
+					callback(xhtp);
+				}
+			}
+			xhtp.open('get', 'EmpServletJason', true); // true : 비동기화식(안기다리고 처리)
+			xhtp.send();
+		}
+
+		function callback(xhtp) {
+			console.log(xhtp.responseText);
+			/*var text = "";
+			var result = xhtp.responseXML;
+			var x = result.getElementsByTagName("employee")
+			for (var i = 0; i < x.length; i++) {
+				text += "<li>" + x[i].childNodes[1].childNodes[0].nodeValue + " "
+						+ x[i].childNodes[3].childNodes[0].nodeValue + "<br>" + "</li>";
+			}
+			document.getElementById("show").innerHTML = text;*/
+		}
+	</script>
+</body>
+</html>

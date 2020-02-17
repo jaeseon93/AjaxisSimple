@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>ajaxSample.html</title>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script>
+	// Ajax 를 jquery 사용
+	$(document).ready(
+			function() {
+				//		$.each();
+				$.ajax({
+					url : "../EmpServletJason",
+					dataType : "json",
+					success : function(result) {
+						console.log(result);
+						callBackFunc(result);
+					}
+				});
+				function callBackFunc(obj) {
+					var $table, $tr;
+					$table = $("<table>").attr("border", 1);
+					$table.attr("id", "EmpTable");
+					$(obj).each(
+							function(i, o) {
+								$tr = $("<tr>").attr("id", o.employeeId);
+								$tr.mouseover(callMover);
+								$tr.mouseout(callMout);
+								$tr.append($("<td>").text(o.employeeId), $(
+										"<td>").text(o.firstName), $("<td>")
+										.text(o.lastName), $("<td>").text(
+										o.email), $("<td>").text(o.salary), $(
+										"<td>")
+										.html(
+												$("<button>").text("삭제").click(
+														delFunc)));
+								$table.append($tr);
+							})
+
+					//table을 화면에 보여줌.
+					$("#show").append($table);
+				}
+
+				function callMover() {
+					$(this).css("backgroundColor", "orange");
+				}
+				function callMout() {
+					$(this).css("backgroundColor", "");
+				}
+				function delFunc() {
+					var trTag = $(this).parent().parent();
+					var empId = trTag.attr("id");
+					//디비처리
+					$.ajax({
+						url : "../DeleteEmpServlet",
+						data : {
+							"empId" : empId
+						},
+						success : function() {
+							console.log("success")
+						}
+					});
+					//화면처리
+					$(this).parent().parent().remove();
+				}
+
+				// 전송버튼 클릭 : 데이터 한건 입력
+				$("#submit").click(
+						function() {
+							var frm = $("[name='frm1']");
+							$.ajax({
+								url : frm.attr("action"),
+								data : frm.serialize(),
+								success : function(result) {
+									var newEmpId = result;
+									createNewEmp(newEmpId);
+									// 화면에 입력된 데이터 나타나도록 추가.
+						
+
+								}
+							});
+						})
+					function createNewEmp(newEmpId){
+					    console.log(newEmpId);
+					    var values = $("#EmpTable");
+					    var $tr = $("<tr>").attr("id", newEmpId);
+						$tr.mouseover(callMover);
+						$tr.mouseout(callMout);
+						$tr.append($("<td>").text(newEmpId));
+						$tr.append($("<td>").text($("#FName").val()));
+						$tr.append($("<td>").text($("#LName").val()));
+						$tr.append($("<td>").text($("#email").val()));
+						$tr.append($("<td>").text($("#salary").val()));
+						$tr.append($("<td>").html($("<button>").text("삭제").click(delFunc)));
+						values.append($tr);		
+				     }
+				function onDelete() {
+					$(this).parent().parent().remove(); // this : button , .parent():td, 또 그위의 .parent():tr(=한줄) 을 .remove()지워라.
+				}
+
+			})
+</script>
+</head>
+<body>
+	<form name="frm1" action="../InsertEmpServlet">
+		<table border=1>
+			<tr>
+				<td>FirstName:</td>
+				<td><input type="text" name="FName" id="FName"></td>
+			</tr>
+			<tr>
+				<td>LastName:</td>
+				<td><input type="text" name="LName" id="LName"></td>
+			</tr>
+			<tr>
+				<td>Email:</td>
+				<td><input type="text" name="email" id="email"></td>
+			</tr>
+			<tr>
+				<td>Salary:</td>
+				<td><input type="text" name="salary" id="salary"></td>
+			</tr>
+			<tr align="center">
+				<td colspan="2">
+					<button type="button" id="submit">전송</button>
+			</tr>
+		</table>
+
+	</form>
+
+	<p id="show"></p>
+
+
+
+</body>
+</html>
